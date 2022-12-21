@@ -14,7 +14,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <Container>
       <Header>
         {/* otimiza a imgem para ficar muito mais leve */}
-          <Image src={logoImg.src} alt="" />
+          <Image src={logoImg.src} alt="" width="130" height="52" />
       </Header>
   <Component {...pageProps} />
   </Container>)
