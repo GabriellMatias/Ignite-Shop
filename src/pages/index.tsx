@@ -3,7 +3,7 @@ import { HomeContainer, Product } from '../styles/pages/home'
 import { useKeenSlider } from 'keen-slider/react'
 
 import 'keen-slider/keen-slider.min.css'
-import { GetServerSideProps } from 'next'
+import { GetStaticProps } from 'next'
 import { stripe } from '../lib/stripe'
 import Stripe from 'stripe'
 
@@ -43,8 +43,8 @@ export default function Home({ productData }: ProductDataProps) {
     </HomeContainer>
   )
 }
-
-export const getServerSideProps: GetServerSideProps = async () => {
+/* se comporta como um getServerSidProps em ambiente de desenvolvimento */
+export const getStaticProps: GetStaticProps = async () => {
   /* pegando o preco e nao seu ID */
   const stripeResponse = await stripe.products.list({
     expand: ['data.default_price'],
@@ -57,11 +57,15 @@ export const getServerSideProps: GetServerSideProps = async () => {
     return {
       id: product.id,
       name: product.name,
+      /* pode ter varias imagens, entao pega a primeira cm o vetor */
       imgUrl: product.images[0],
       /* vem em centavos */
-      price: price.unit_amount,
+      price: new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+      }).format(price.unit_amount! / 100),
     }
   })
 
-  return { props: { productData } }
+  return { props: { productData }, revalidate: 60 * 60 * 24 /* 24horas */ }
 }
