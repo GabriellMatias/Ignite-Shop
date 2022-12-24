@@ -12,28 +12,26 @@ import {
 } from '../../styles/pages/product'
 
 interface ProductProps {
-  product: {
-    id: string
-    name: string
-    imgUrl: string
-    price: string
-    description: string
-  }
+  id: string
+  name: string
+  imgUrl: string
+  price: string
+  description: string
 }
 
-export default function Product({ product }: ProductProps) {
+export default function Product(props: ProductProps) {
   // const { isFallback } = useRouter() retorna se a pagina ta sendo carregada caso o fallback seja true
 
   return (
     <ProductContainer>
       <ImageContainer>
-        <Image src={product.imgUrl} alt="" width={520} height={480} />
+        <Image src={props.imgUrl} alt="" width={520} height={480} />
       </ImageContainer>
 
       <ProductDetails>
-        <h1>{product.name}</h1>
-        <span>{product.price}</span>
-        <p>{product.description}</p>
+        <h1>{props.name}</h1>
+        <span>{props.price}</span>
+        <p>{props.description}</p>
 
         <button>Buy now</button>
       </ProductDetails>
@@ -44,7 +42,7 @@ export default function Product({ product }: ProductProps) {
 /* paginas dinamicas sao obrigatorias o getStaticPath */
 /* dizer quais parametros vao vim pra gerar as paginas staticas quando a aplicacao
 comeca */
-export const getStaticPath: GetStaticPaths = async () => {
+export const getStaticPaths: GetStaticPaths = async () => {
   /* busca os produtos mais acessados e passa em paths os produtos mais acessados
   pois essa paginas serao geradas no momento da build */
 
