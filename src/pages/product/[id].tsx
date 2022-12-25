@@ -1,8 +1,10 @@
 /* useRouter tem acesso aos parametros que vem de [id] que e o que vem depois de 
 product por exemplo na URL */
 
+import axios from 'axios'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import Stripe from 'stripe'
 import { stripe } from '../../lib/stripe'
 import {
@@ -17,10 +19,25 @@ interface ProductProps {
   imgUrl: string
   price: string
   description: string
+  defaultPriceId: string
 }
 
 export default function Product(props: ProductProps) {
   // const { isFallback } = useRouter() retorna se a pagina ta sendo carregada caso o fallback seja true
+
+  const router = useRouter()
+
+  async function handleBuyProduct() {
+    try {
+      const response = await axios.post('/api/checkout', {
+        priceId: props.defaultPriceId,
+      })
+      const { checkoutUrl } = response.data
+    } catch (error) {
+      console.log(error)
+      alert(error)
+    }
+  }
 
   return (
     <ProductContainer>
@@ -33,7 +50,7 @@ export default function Product(props: ProductProps) {
         <span>{props.price}</span>
         <p>{props.description}</p>
 
-        <button>Buy now</button>
+        <button onClick={handleBuyProduct}>Buy now</button>
       </ProductDetails>
     </ProductContainer>
   )
@@ -81,6 +98,8 @@ export const getStaticProps: GetStaticProps<any, { id: string }> = async ({
         currency: 'BRL',
       }).format(price.unit_amount! / 100),
       description: product.description,
+      /* para puxar o produtoo na checkout session */
+      defaultPriceId: price.id,
     },
     revalidate: 60 * 60 * 4, // 4horas
   }
