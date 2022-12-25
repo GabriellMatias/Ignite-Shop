@@ -3,8 +3,9 @@ product por exemplo na URL */
 
 import axios from 'axios'
 import { GetStaticPaths, GetStaticProps } from 'next'
+import Head from 'next/head'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
+import { useState } from 'react'
 import Stripe from 'stripe'
 import { stripe } from '../../lib/stripe'
 import {
@@ -25,34 +26,53 @@ interface ProductProps {
 export default function Product(props: ProductProps) {
   // const { isFallback } = useRouter() retorna se a pagina ta sendo carregada caso o fallback seja true
 
-  const router = useRouter()
+  const [isCreatingCheckoutSession, setisCreatingCheckoutSession] =
+    useState<boolean>(false)
 
   async function handleBuyProduct() {
     try {
+      setisCreatingCheckoutSession(true)
+      /* aqui envia o parametro para a rotA API, desse modo pega o prce id la
+      com o req.body */
       const response = await axios.post('/api/checkout', {
         priceId: props.defaultPriceId,
       })
       const { checkoutUrl } = response.data
+
+      /* redirecionando o usuario pra uma rota que nao e nossaa, e do stripe. Se fosse uma rota
+      do nosso aplicativo, usariamos o userouter */
+      window.location.href = checkoutUrl
     } catch (error) {
+      setisCreatingCheckoutSession(false)
       console.log(error)
       alert(error)
     }
   }
 
   return (
-    <ProductContainer>
-      <ImageContainer>
-        <Image src={props.imgUrl} alt="" width={520} height={480} />
-      </ImageContainer>
+    <>
+      <Head>
+        <title>{Product.name} | Ignite Shop</title>
+      </Head>
+      <ProductContainer>
+        <ImageContainer>
+          <Image src={props.imgUrl} alt="" width={520} height={480} />
+        </ImageContainer>
 
-      <ProductDetails>
-        <h1>{props.name}</h1>
-        <span>{props.price}</span>
-        <p>{props.description}</p>
+        <ProductDetails>
+          <h1>{props.name}</h1>
+          <span>{props.price}</span>
+          <p>{props.description}</p>
 
-        <button onClick={handleBuyProduct}>Buy now</button>
-      </ProductDetails>
-    </ProductContainer>
+          <button
+            onClick={handleBuyProduct}
+            disabled={isCreatingCheckoutSession}
+          >
+            Buy now
+          </button>
+        </ProductDetails>
+      </ProductContainer>
+    </>
   )
 }
 

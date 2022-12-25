@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { HomeContainer, Product } from '../styles/pages/home'
 import { useKeenSlider } from 'keen-slider/react'
-
+import Head from 'next/head'
 import 'keen-slider/keen-slider.min.css'
 import { GetStaticProps } from 'next'
 import { stripe } from '../lib/stripe'
@@ -29,30 +29,35 @@ export default function Home({ productData }: ProductDataProps) {
   })
 
   return (
-    <HomeContainer ref={sliderRef} className="keen-slider">
-      {productData.map((product) => {
-        return (
-          /* link do next impede que coisas desnecessaria sejam carregadas
+    <>
+      <Head>
+        <title>Home | Ignite Shop</title>
+      </Head>
+      <HomeContainer ref={sliderRef} className="keen-slider">
+        {productData.map((product) => {
+          return (
+            /* link do next impede que coisas desnecessaria sejam carregadas
           quando o usuario clicar no link */
-          <Link
-            href={`/product/${product.id}`}
-            key={product.id}
-            /* um complemento para funcionar o getStaticPath, para que ele nao 
+            <Link
+              href={`/product/${product.id}`}
+              key={product.id}
+              /* um complemento para funcionar o getStaticPath, para que ele nao 
             pre Carregue a pagina. Prefetch se deixar isso deixa pesado pois ele pre-carrega a pagina
             automaticamente */
-            prefetch={false}
-          >
-            <Product className="keen-slider__slide">
-              <Image src={product.imgUrl} width={520} height={480} alt="" />
-              <footer>
-                <strong>{product.name}</strong>
-                <span>{product.price}</span>
-              </footer>
-            </Product>
-          </Link>
-        )
-      })}
-    </HomeContainer>
+              prefetch={false}
+            >
+              <Product className="keen-slider__slide">
+                <Image src={product.imgUrl} width={520} height={480} alt="" />
+                <footer>
+                  <strong>{product.name}</strong>
+                  <span>{product.price}</span>
+                </footer>
+              </Product>
+            </Link>
+          )
+        })}
+      </HomeContainer>
+    </>
   )
 }
 /* se comporta como um getServerSidProps em ambiente de desenvolvimento */
