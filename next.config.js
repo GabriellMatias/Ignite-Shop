@@ -4,6 +4,12 @@ const nextConfig = {
 
   images: {
     domains: ['files.stripe.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'github.com',
+      },
+    ],
   },
 }
 

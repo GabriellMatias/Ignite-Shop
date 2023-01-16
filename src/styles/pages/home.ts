@@ -39,6 +39,10 @@ export const Product = styled('div', {
     transform: 'translateY(110%)',
     opacity: 0,
     transition: 'all 0.2s ease-in-out',
+    div: {
+      display: 'flex',
+      flexDirection: 'column',
+    },
 
     strong: {
       fontSize: '$lg',

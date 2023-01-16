@@ -7,6 +7,7 @@ import { GetStaticProps } from 'next'
 import { stripe } from '../lib/stripe'
 import Stripe from 'stripe'
 import Link from 'next/link'
+import { CartButton } from '../components/CartButton'
 
 interface ProductDataProps {
   productData: {
@@ -49,8 +50,11 @@ export default function Home({ productData }: ProductDataProps) {
               <Product className="keen-slider__slide">
                 <Image src={product.imgUrl} width={520} height={480} alt="" />
                 <footer>
-                  <strong>{product.name}</strong>
-                  <span>{product.price}</span>
+                  <div>
+                    <strong>{product.name}</strong>
+                    <span>{product.price}</span>
+                  </div>
+                  <CartButton />
                 </footer>
               </Product>
             </Link>
