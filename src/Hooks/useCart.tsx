@@ -15,6 +15,7 @@ export interface ProductCartProps {
 interface CartContextData {
   productInCart: ProductCartProps[]
   isCreatingCheckoutSession: boolean
+  cartTotal: number
   addProductToCart: (product: ProductCartProps) => void
   deleteProduct: (id: string) => void
   checkIfItemExists: (productId: string) => boolean
@@ -33,6 +34,9 @@ export function CartContextProvider({ children }: CartContextProviderProps) {
 
   const [isCreatingCheckoutSession, setisCreatingCheckoutSession] =
     useState<boolean>(false)
+  const cartTotal = productInCart.reduce((total, product) => {
+    return total + product.numberPrice!
+  }, 0)
 
   async function BuyProduct() {
     try {
@@ -59,6 +63,10 @@ export function CartContextProvider({ children }: CartContextProviderProps) {
   }
 
   function addProductToCart(product: ProductCartProps) {
+    if (checkIfItemExists(product.id)) {
+      toast.error('Product already in cart')
+      return
+    }
     try {
       setProductInCartItems((state) => [...state, product])
       toast.success('Product added to cart')
@@ -91,6 +99,7 @@ export function CartContextProvider({ children }: CartContextProviderProps) {
         checkIfItemExists,
         BuyProduct,
         isCreatingCheckoutSession,
+        cartTotal,
       }}
     >
       {children}

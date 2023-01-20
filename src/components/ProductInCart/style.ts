@@ -21,8 +21,8 @@ export const ProductDetails = styled('div', {
 
   h2: {
     color: '$gray300',
-    fontWeight: 'normal',
-    lineHeight: '160%',
+    fontWeight: 400,
+    fontSize: '18px',
   },
   strong: {
     color: '$gray100',

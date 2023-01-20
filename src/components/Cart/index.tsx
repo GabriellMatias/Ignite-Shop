@@ -6,11 +6,14 @@ import { ProductInCart } from '../ProductInCart'
 import { useCart } from '../../Hooks/useCart'
 
 export function Cart() {
-  const { productInCart, BuyProduct, isCreatingCheckoutSession } = useCart()
+  const { productInCart, BuyProduct, cartTotal, isCreatingCheckoutSession } =
+    useCart()
   const isCartEmpty = productInCart.length !== 0
-  const totalPrice = productInCart.reduce((acc, product) => {
-    return Number(acc + product.price)
-  }, 0)
+  const formattedTotalPrice = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(cartTotal)
+
   async function handleBuyProducts() {
     BuyProduct()
   }
@@ -52,7 +55,7 @@ export function Cart() {
                   {productInCart.length > 1 ? 'itens' : 'item'}
                 </span>
                 <strong>Valor Total</strong>
-                <strong>{totalPrice}</strong>
+                <strong>{formattedTotalPrice}</strong>
               </BuyDetails>
               <BuyButton
                 onClick={handleBuyProducts}
