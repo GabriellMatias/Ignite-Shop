@@ -17,6 +17,12 @@ export const CartContainer = styled(Dialog.Content, {
     color: '$gray100',
     fontSize: '$lg',
   },
+  section: {
+    fontWeight: 'bold',
+    color: '$gray100',
+    justifySelf: 'center',
+    marginTop: '3rem',
+  },
 })
 
 export const CartClose = styled(Dialog.Close, {
@@ -31,11 +37,22 @@ export const CartClose = styled(Dialog.Close, {
 })
 
 export const BuyDetails = styled('footer', {
-  marginTop: '190px',
+  marginTop: '6rem',
   marginBottom: '57px',
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
+  gap: '0.75rem',
   color: '$gray100',
+  span: {
+    justifySelf: 'end',
+  },
+  strong: {
+    fontSize: '$xl',
+    '&:last-child': {
+      justifySelf: 'end',
+      fontSize: '32px',
+    },
+  },
 })
 export const BuyButton = styled('button', {
   width: '384px',
@@ -53,4 +70,8 @@ export const BuyButton = styled('button', {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+  marginBottom: '48px',
+  '&:hover': {
+    background: '$green300',
+  },
 })

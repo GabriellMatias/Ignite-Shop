@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
+import { ProductCartProps } from '../../Hooks/useCart'
 import { stripe } from '../../lib/stripe'
 
 export default async function handler(
@@ -6,7 +7,7 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   /* paarametro vem da pagina produtc/[id] */
-  const { priceId } = req.body
+  const { products } = req.body as { products: ProductCartProps[] }
 
   /* evitar que o usuario acesse  pagna pela barra de pesqusa com o metodo GET,
   entao aqui so aceita metodo post */
@@ -14,8 +15,8 @@ export default async function handler(
     return res.status(405)
   }
 
-  if (!priceId) {
-    return res.status(400).json({ error: 'price not found' })
+  if (!products) {
+    return res.status(400).json({ error: 'price not founddd' })
   }
 
   /* criando uma sessao de checkout, quando o usuario for comprar o produto, ai 
@@ -32,12 +33,10 @@ export default async function handler(
     success_url: successUrl,
     cancel_url: cancelUrl,
     mode: 'payment',
-    line_items: [
-      {
-        price: priceId,
-        quantity: 1,
-      },
-    ],
+    line_items: products.map((product) => ({
+      price: product.defaultPriceId,
+      quantity: 1,
+    })),
   })
 
   return res.status(201).json({

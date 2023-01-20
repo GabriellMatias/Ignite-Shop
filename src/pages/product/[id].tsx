@@ -1,12 +1,13 @@
 /* useRouter tem acesso aos parametros que vem de [id] que e o que vem depois de 
 product por exemplo na URL */
 
-import axios from 'axios'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useRouter } from 'next/router'
+
 import Stripe from 'stripe'
+import { useCart } from '../../Hooks/useCart'
 import { stripe } from '../../lib/stripe'
 import {
   ImageContainer,
@@ -24,29 +25,14 @@ interface ProductProps {
 }
 
 export default function Product(props: ProductProps) {
-  // const { isFallback } = useRouter() retorna se a pagina ta sendo carregada caso o fallback seja true
-
-  const [isCreatingCheckoutSession, setisCreatingCheckoutSession] =
-    useState<boolean>(false)
-
-  async function handleBuyProduct() {
-    try {
-      setisCreatingCheckoutSession(true)
-      /* aqui envia o parametro para a rotA API, desse modo pega o prce id la
-      com o req.body */
-      const response = await axios.post('/api/checkout', {
-        priceId: props.defaultPriceId,
-      })
-      const { checkoutUrl } = response.data
-
-      /* redirecionando o usuario pra uma rota que nao e nossaa, e do stripe. Se fosse uma rota
-      do nosso aplicativo, usariamos o userouter */
-      window.location.href = checkoutUrl
-    } catch (error) {
-      setisCreatingCheckoutSession(false)
-      console.log(error)
-      alert(error)
-    }
+  const { isFallback } = useRouter() // retorna se a pagina ta sendo carregada caso o fallback seja true
+  const { checkIfItemExists, addProductToCart } = useCart()
+  const itemAlreadyInCart = checkIfItemExists(props.id)
+  if (isFallback) {
+    return <p>Loading...</p>
+  }
+  async function handleBuyProduct(product: ProductProps) {
+    addProductToCart(product)
   }
 
   return (
@@ -65,10 +51,10 @@ export default function Product(props: ProductProps) {
           <p>{props.description}</p>
 
           <button
-            onClick={handleBuyProduct}
-            disabled={isCreatingCheckoutSession}
+            onClick={() => handleBuyProduct(props)}
+            disabled={itemAlreadyInCart}
           >
-            Buy now
+            {itemAlreadyInCart ? 'Item Already In Cart' : 'Buy now'}
           </button>
         </ProductDetails>
       </ProductContainer>

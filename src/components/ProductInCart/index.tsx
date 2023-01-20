@@ -1,15 +1,29 @@
 import { ProductDetails, ProductImage, ProductInCartContainer } from './style'
 import Image from 'next/image'
-export function ProductInCart() {
+import { useCart } from '../../Hooks/useCart'
+interface ProductInCartProps {
+  name: string
+  price: string
+  id: string
+  imgUrl: string
+}
+
+export function ProductInCart({ name, price, id, imgUrl }: ProductInCartProps) {
+  const { deleteProduct } = useCart()
+
+  function handleDeleteProduct(id: string) {
+    deleteProduct(id)
+  }
+
   return (
     <ProductInCartContainer>
       <ProductImage>
-        <Image src="/camisaTeste.png" width={100} height={100} alt="Camisa" />
+        <Image src={imgUrl} width={100} height={100} alt="Camisa" />
       </ProductImage>
       <ProductDetails>
-        <h2>Camiseta teste limits</h2>
-        <strong>R$ 89,00</strong>
-        <button>
+        <h2>{name}</h2>
+        <strong>{price}</strong>
+        <button onClick={() => handleDeleteProduct(id)}>
           <strong>Remover</strong>
         </button>
       </ProductDetails>

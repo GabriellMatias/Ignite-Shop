@@ -8,6 +8,7 @@ import { stripe } from '../lib/stripe'
 import Stripe from 'stripe'
 import Link from 'next/link'
 import { CartButton } from '../components/CartButton'
+import { ProductCartProps, useCart } from '../Hooks/useCart'
 
 interface ProductDataProps {
   productData: {
@@ -15,11 +16,16 @@ interface ProductDataProps {
     name: string
     imgUrl: string
     price: string
+    numberPrice: number
+    description: string
+    defaultPriceId: string
   }[]
   /* colchete no final significa que esse dado e um array de produtos, ou seja
   tem varios */
 }
 export default function Home({ productData }: ProductDataProps) {
+  const { addProductToCart } = useCart()
+
   const [sliderRef] = useKeenSlider({
     /* spacamento deve ser feito por aqui, se for feito pelo css o ultimo produto
     nao vai fechar na pagina */
@@ -28,6 +34,9 @@ export default function Home({ productData }: ProductDataProps) {
       spacing: 48,
     },
   })
+  function handleAddProductToCart(product: ProductCartProps) {
+    addProductToCart(product)
+  }
 
   return (
     <>
@@ -37,27 +46,31 @@ export default function Home({ productData }: ProductDataProps) {
       <HomeContainer ref={sliderRef} className="keen-slider">
         {productData.map((product) => {
           return (
-            /* link do next impede que coisas desnecessaria sejam carregadas
-          quando o usuario clicar no link */
-            <Link
-              href={`/product/${product.id}`}
-              key={product.id}
-              /* um complemento para funcionar o getStaticPath, para que ele nao 
+            <Product className="keen-slider__slide" key={product.id}>
+              {/* link do next impede que coisas desnecessaria sejam carregadas
+              quando o usuario clicar no link */}
+              <Link
+                href={`/product/${product.id}`}
+                /* um complemento para funcionar o getStaticPath, para que ele nao 
             pre Carregue a pagina. Prefetch se deixar isso deixa pesado pois ele pre-carrega a pagina
             automaticamente */
-              prefetch={false}
-            >
-              <Product className="keen-slider__slide">
+                prefetch={false}
+              >
                 <Image src={product.imgUrl} width={520} height={480} alt="" />
-                <footer>
-                  <div>
-                    <strong>{product.name}</strong>
-                    <span>{product.price}</span>
-                  </div>
-                  <CartButton />
-                </footer>
-              </Product>
-            </Link>
+              </Link>
+              <footer>
+                <div>
+                  <strong>{product.name}</strong>
+                  <span>{product.price}</span>
+                </div>
+
+                <CartButton
+                  color={'green'}
+                  size="large"
+                  onClick={() => handleAddProductToCart(product)}
+                />
+              </footer>
+            </Product>
           )
         })}
       </HomeContainer>
@@ -85,6 +98,8 @@ export const getStaticProps: GetStaticProps = async () => {
         style: 'currency',
         currency: 'BRL',
       }).format(price.unit_amount! / 100),
+      numberPrice: price.unit_amount! / 100,
+      defaultPriceId: price.id,
     }
   })
 
